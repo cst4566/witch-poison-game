@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>女巫的毒药</title>
+  <style>
+    :root {
+      --bg-1: #09030f;
+      --bg-2: #1a0820;
+      --panel: rgba(18, 10, 28, 0.82);
+      --panel-border: rgba(193, 91, 255, 0.28);
+      --glow: #bc5cff;
+      --glow-soft: rgba(188, 92, 255, 0.25);
+      --crimson: #d62b58;
+      --gold: #ffd36d;
+      --ink: #f6efff;
+      --muted: #cab8dc;
+      --safe: #7ce7d1;
+      --danger: #ff4a66;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      font-family: "Trebuchet MS", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(156, 31, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 18%, rgba(255, 71, 123, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 85%, rgba(68, 255, 229, 0.08), transparent 20%),
+        linear-gradient(180deg, #14071e 0%, #09030f 45%, #130816 100%);
+      overflow: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 10% 30%, rgba(255,255,255,0.04) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 22%, rgba(255,255,255,0.03) 0 2px, transparent 3px),
+        radial-gradient(circle at 35% 68%, rgba(255,255,255,0.04) 0 1px, transparent 2px),
+        radial-gradient(circle at 66% 80%, rgba(255,255,255,0.03) 0 2px, transparent 3px);
+      opacity: 0.8;
+    }
+
+    body::after {
+      background:
+        conic-gradient(from 120deg at 50% 50%, transparent 0deg, rgba(188, 92, 255, 0.03) 40deg, transparent 80deg, rgba(214, 43, 88, 0.05) 120deg, transparent 180deg, rgba(124, 231, 209, 0.03) 220deg, transparent 360deg);
+      mix-blend-mode: screen;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1500px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 12px 18px 14px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+
+    .top-panel {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow), inset 0 0 30px rgba(188, 92, 255, 0.06);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 18px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      top: -90px;
+      right: -70px;
+      background: radial-gradient(circle, rgba(188, 92, 255, 0.28), transparent 68%);
+      filter: blur(8px);
+    }
+
+    .title {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px rgba(188, 92, 255, 0.6);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(13px, 1.35vw, 18px);
+      line-height: 1.35;
+      max-width: 720px;
+    }
+
+    .status-panel {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      align-content: center;
+    }
+
+    .round-turn {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-card,
+    .score-card,
+    .status-card {
+      border-radius: 18px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.03);
+    }
+
+    .mini-label,
+    .score-label,
+    .status-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #d6b7f3;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-size: clamp(16px, 1.8vw, 24px);
+      font-weight: 700;
+    }
+
+    .player-current {
+      color: #fff0f7;
+      text-shadow: 0 0 12px rgba(255, 74, 102, 0.5);
+    }
+
+    .score-wrap {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .score-card.active {
+      border-color: rgba(255, 211, 109, 0.45);
+      box-shadow: inset 0 0 18px rgba(255, 211, 109, 0.06), 0 0 22px rgba(255, 211, 109, 0.18);
+    }
+
+    .score-value {
+      font-size: clamp(18px, 1.5vw, 24px);
+      line-height: 1.2;
+      word-break: break-word;
+      min-height: 28px;
+    }
+
+    .score-value.empty {
+      color: #8e7aa7;
+    }
+
+    .status-card {
+      min-height: 62px;
+    }
+
+    .status-text {
+      font-size: clamp(13px, 1.2vw, 17px);
+      line-height: 1.35;
+      color: #f7ebff;
+    }
+
+    .board-shell {
+      position: relative;
+      min-height: 0;
+      padding: 12px;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        rgba(12, 7, 18, 0.72);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      height: min(52vh, 540px);
+    }
+
+    .card {
+      position: relative;
+      height: 100%;
+      min-height: 118px;
+      perspective: 1200px;
+      cursor: pointer;
+      border-radius: 24px;
+      outline: none;
+      transition: transform 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card:focus-visible {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.22), 0 0 0 6px rgba(188, 92, 255, 0.28);
+    }
+
+    .card.disabled {
+      cursor: not-allowed;
+      opacity: 0.94;
+    }
+
+    .card.selected {
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .card.selected .card-inner {
+      box-shadow: 0 0 0 3px rgba(255, 211, 109, 0.95), 0 0 26px rgba(255, 211, 109, 0.45);
+    }
+
+    .card.teacher-mark:not(.revealed):not(.poisoned) .card-face-front::after {
+      content: "☠";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 14px;
+      color: rgba(186, 94, 255, 0.86);
+      text-shadow: 0 0 8px rgba(186, 94, 255, 0.95);
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+      border-radius: 24px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 18px 28px rgba(0,0,0,0.4);
+    }
+
+    .card.revealed .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card.poisoned .card-inner {
+      transform: scale(0.97);
+      box-shadow: 0 0 0 2px rgba(255, 74, 102, 0.5), 0 0 32px rgba(255, 74, 102, 0.22);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px;
+      backface-visibility: hidden;
+      overflow: hidden;
+    }
+
+    .card-face::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 23px;
+      pointer-events: none;
+    }
+
+    .card-face-front {
+      background:
+        radial-gradient(circle at top, rgba(188, 92, 255, 0.18), transparent 45%),
+        linear-gradient(180deg, rgba(26, 11, 38, 0.98), rgba(13, 7, 20, 0.98));
+      border: 1px solid rgba(190, 122, 255, 0.22);
+      color: #fff6ff;
+    }
+
+    .card-face-front::before {
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 0 40px rgba(188, 92, 255, 0.06);
+    }
+
+    .card-face-back {
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(circle at top, rgba(124, 231, 209, 0.16), transparent 45%),
+        linear-gradient(180deg, rgba(11, 38, 35, 0.98), rgba(7, 20, 17, 0.98));
+      border: 1px solid rgba(124, 231, 209, 0.25);
+      color: #f3fffd;
+    }
+
+    .card.poisoned .card-face-front {
+      background:
+        radial-gradient(circle at top, rgba(255, 74, 102, 0.22), transparent 48%),
+        linear-gradient(180deg, rgba(50, 11, 24, 0.98), rgba(20, 7, 12, 0.98));
+      border-color: rgba(255, 74, 102, 0.3);
+    }
+
+    .card-backmark {
+      font-size: clamp(42px, 5.5vw, 72px);
+      color: rgba(245, 228, 255, 0.9);
+      text-shadow: 0 0 24px rgba(188, 92, 255, 0.45);
+      letter-spacing: 6px;
+    }
+
+    .card-text {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(24px, 2vw, 34px);
+      font-weight: 700;
+      line-height: 1.15;
+      text-wrap: balance;
+      color: inherit;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.52);
+    }
+
+    .card-text.small {
+      font-size: clamp(18px, 1.5vw, 26px);
+    }
+
+    .poison-mark {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(24px, 2.2vw, 34px);
+      font-weight: 800;
+      line-height: 1.2;
+      color: #ffe8ef;
+      text-shadow: 0 0 18px rgba(255, 74, 102, 0.62);
+    }
+
+    .setup-mark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(88, 19, 130, 0.92);
+      border: 1px solid rgba(230, 192, 255, 0.58);
+      color: #fff2ff;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 0 16px rgba(188, 92, 255, 0.38);
+      pointer-events: none;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 14px;
+      padding: 10px 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      min-height: 50px;
+      transition: transform 0.15s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.26);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.52;
+      transform: none;
+      filter: none;
+    }
+
+    .btn-start { background: linear-gradient(135deg, #6f2aff, #b35cff); }
+    .btn-turn { background: linear-gradient(135deg, #4256ff, #7082ff); }
+    .btn-p1 { background: linear-gradient(135deg, #f08a21, #ffd26d); color: #2f1a00; }
+    .btn-p2 { background: linear-gradient(135deg, #2bc4c0, #82ffe1); color: #04201d; }
+    .btn-teacher { background: linear-gradient(135deg, #8b8b97, #d2d4de); color: #1f2026; }
+    .btn-next { background: linear-gradient(135deg, #ab2044, #ff647f); }
+    .btn-reset { background: linear-gradient(135deg, #2c1734, #5d2b6a); }
+
+    .legend {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+      color: #bdaed0;
+      font-size: 12px;
+      padding: 0 4px;
+    }
+
+    .hint-pill {
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 18px;
+      background:
+        radial-gradient(circle at center, rgba(255, 69, 101, 0.28), rgba(48, 0, 12, 0.92)),
+        rgba(20, 0, 8, 0.76);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+      animation: flashRed 0.85s ease, quake 0.65s linear 2;
+    }
+
+    .overlay-title {
+      font-size: clamp(52px, 8vw, 110px);
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #fff0f4;
+      text-shadow: 0 0 22px rgba(255, 74, 102, 0.8), 0 0 52px rgba(255, 74, 102, 0.38);
+    }
+
+    .overlay-sub {
+      font-size: clamp(22px, 3vw, 42px);
+      color: #ffd7e2;
+      font-weight: 700;
+    }
+
+    .blast {
+      width: min(36vw, 320px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 10%, rgba(255, 211, 109, 0.95) 12%, rgba(255, 74, 102, 0.95) 28%, rgba(98, 0, 27, 0.25) 60%, transparent 72%);
+      box-shadow: 0 0 50px rgba(255, 74, 102, 0.5), 0 0 120px rgba(255, 74, 102, 0.35);
+      animation: burst 1.2s ease forwards;
+    }
+
+    .teacher-tag {
+      position: fixed;
+      top: 12px;
+      right: 14px;
+      z-index: 4;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(78, 22, 109, 0.76);
+      color: #efdbff;
+      border: 1px solid rgba(192, 113, 255, 0.35);
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+
+    .teacher-tag.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes flashRed {
+      0%, 100% { background-color: rgba(20, 0, 8, 0.76); }
+      20% { background-color: rgba(255, 62, 93, 0.45); }
+      50% { background-color: rgba(255, 62, 93, 0.15); }
+      75% { background-color: rgba(255, 62, 93, 0.38); }
+    }
+
+    @keyframes quake {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-12px, 8px); }
+      20% { transform: translate(10px, -7px); }
+      30% { transform: translate(-7px, -10px); }
+      40% { transform: translate(10px, 6px); }
+      50% { transform: translate(-12px, 0); }
+      60% { transform: translate(8px, -7px); }
+      70% { transform: translate(-8px, 10px); }
+      80% { transform: translate(6px, -6px); }
+      90% { transform: translate(-4px, 4px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes burst {
+      0% { transform: scale(0.2); opacity: 0.1; }
+      20% { transform: scale(0.88); opacity: 1; }
+      55% { transform: scale(1.12); opacity: 1; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+
+    @media (max-width: 1200px) {
+      html, body {
+        height: auto;
+        overflow: auto;
+      }
+
+      .app {
+        min-height: auto;
+      }
+
+      .top-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .board {
+        height: auto;
+        min-height: 50vh;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .board {
+        gap: 14px;
+        min-height: 48vh;
+      }
+
+      .card {
+        height: 190px;
+        min-height: 150px;
+      }
+
+      .card-text {
+        font-size: clamp(24px, 3vw, 34px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 14px 12px 22px;
+      }
+
+      .board {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .round-turn,
+      .score-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .legend {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="teacher-tag" id="teacherTag">教师模式已开启：显示毒药标记</div>
+
+  <div class="overlay" id="poisonOverlay" aria-hidden="true">
+    <div class="blast"></div>
+    <div class="overlay-title">WITCH'S POISON!</div>
+    <div class="overlay-sub">中毒了！星星已清零！</div>
+  </div>
+
+  <div class="app">
+    <section class="top-panel">
+      <div class="panel hero">
+        <h1 class="title">《女巫的毒药》</h1>
+        <p class="subtitle">双人课堂词汇对决：选卡、抢答、翻牌，躲开女巫留下的毒药。安全牌翻开后会显示另一种语言，毒药牌会立刻清空当前翻牌玩家的星星。</p>
+      </div>
+
+      <div class="panel status-panel">
+        <div class="round-turn">
+          <div class="mini-card">
+            <div class="mini-label">当前轮次</div>
+            <div class="mini-value" id="roundText">第 1 轮 / 共 2 轮</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-label">当前玩家</div>
+            <div class="mini-value player-current" id="currentPlayerText">Player 1</div>
+          </div>
+        </div>
+        <div class="score-wrap">
+          <div class="score-card active" id="player1Card">
+            <div class="score-label">Player 1 星星</div>
+            <div class="score-value empty" id="player1Score">暂无</div>
+          </div>
+          <div class="score-card" id="player2Card">
+            <div class="score-label">Player 2 星星</div>
+            <div class="score-value empty" id="player2Score">暂无</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-label">状态提示</div>
+          <div class="status-text" id="statusText">请先让学生在问号卡片中选出 2 张毒药牌，再点击“开始游戏”进入答题。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="board-shell panel">
+      <div class="board" id="board"></div>
+      <div class="legend">
+        <div class="hint-pill">操作流程：先选 2 张毒药牌 → 开始游戏 → 选中卡片 → 口头提问 → 点击教师控制按钮</div>
+        <div class="hint-pill">教师快捷键：按 <strong>T</strong> 可显示 / 隐藏毒药位置</div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button class="btn btn-start" id="startBtn">开始游戏</button>
+      <button class="btn btn-turn" id="toggleTurnBtn">切换回合</button>
+      <button class="btn btn-p1" id="player1AnswerBtn">Player 1答对并翻牌</button>
+      <button class="btn btn-p2" id="player2AnswerBtn">Player 2答对并翻牌</button>
+      <button class="btn btn-teacher" id="teacherRevealBtn">老师揭晓（不计分）</button>
+      <button class="btn btn-next" id="nextRoundBtn">下一轮</button>
+      <button class="btn btn-reset" id="restartBtn">重新开始</button>
+    </section>
+  </div>
+
+  <script>
+    const FALLBACK_WORD_BANK = {
+      title: "女巫的毒药",
+      rounds: [
+        {
+          name: "第1轮",
+          words: [
+            { en: "Letter of Enquiry", zh: "询价函" },
+            { en: "Quotation", zh: "报价单" },
+            { en: "Proposal", zh: "服务方案" },
+            { en: "Sales Order", zh: "销售订单" },
+            { en: "Engagement Letter", zh: "业务约定书" },
+            { en: "Delivery Note", zh: "运货单" },
+            { en: "Goods Received Note", zh: "收货单" },
+            { en: "Staff Schedules", zh: "员工日程" },
+            { en: "Expense Claims", zh: "费用报销" }
+          ]
+        },
+        {
+          name: "第2轮",
+          words: [
+            { en: "Petty Cash Vouchers", zh: "零用资金报销单" },
+            { en: "Invoices", zh: "发票" },
+            { en: "Credit Notes", zh: "抵扣发票" },
+            { en: "Information Request", zh: "资料收集请求" },
+            { en: "Cheque", zh: "支票" },
+            { en: "Bank Giro Credits", zh: "银行信贷转账" },
+            { en: "Bank Draft", zh: "银行汇票" },
+            { en: "Standing Order", zh: "自动转账" },
+            { en: "Direct Debit", zh: "自动付款转账" }
+          ]
+        }
+      ]
+    };
+
+    const state = {
+      wordBank: FALLBACK_WORD_BANK,
+      roundIndex: 0,
+      started: false,
+      currentPlayer: 1,
+      scores: { 1: 0, 2: 0 },
+      cards: [],
+      selectedCardId: null,
+      poisonSetupIds: [],
+      teacherMode: false,
+      overlayTimer: null,
+      loadedFromJson: false
+    };
+
+    const boardEl = document.getElementById("board");
+    const roundTextEl = document.getElementById("roundText");
+    const currentPlayerTextEl = document.getElementById("currentPlayerText");
+    const player1ScoreEl = document.getElementById("player1Score");
+    const player2ScoreEl = document.getElementById("player2Score");
+    const player1CardEl = document.getElementById("player1Card");
+    const player2CardEl = document.getElementById("player2Card");
+    const statusTextEl = document.getElementById("statusText");
+    const overlayEl = document.getElementById("poisonOverlay");
+    const teacherTagEl = document.getElementById("teacherTag");
+    const titleEl = document.querySelector(".title");
+
+    const startBtn = document.getElementById("startBtn");
+    const toggleTurnBtn = document.getElementById("toggleTurnBtn");
+    const player1AnswerBtn = document.getElementById("player1AnswerBtn");
+    const player2AnswerBtn = document.getElementById("player2AnswerBtn");
+    const teacherRevealBtn = document.getElementById("teacherRevealBtn");
+    const nextRoundBtn = document.getElementById("nextRoundBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let speechReady = false;
+    let selectedVoice = null;
+
+    function getRounds() {
+      return Array.isArray(state.wordBank.rounds) ? state.wordBank.rounds : FALLBACK_WORD_BANK.rounds;
+    }
+
+    function getRoundLabel(index) {
+      const rounds = getRounds();
+      return rounds[index]?.name || `第 ${index + 1} 轮`;
+    }
+
+    function validateWordBank(data) {
+      if (!data || !Array.isArray(data.rounds) || data.rounds.length === 0) {
+        return false;
+      }
+      return data.rounds.every((round) => Array.isArray(round.words) && round.words.length === 9 && round.words.every((word) => word.en && word.zh));
+    }
+
+    async function loadWordBank() {
+      try {
+        const response = await fetch("./words.json?ts=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("words.json 加载失败");
+        }
+        const data = await response.json();
+        if (!validateWordBank(data)) {
+          throw new Error("words.json 格式不正确");
+        }
+        state.wordBank = data;
+        state.loadedFromJson = true;
+      } catch (error) {
+        state.wordBank = FALLBACK_WORD_BANK;
+        state.loadedFromJson = false;
+        setStatus("未成功读取 words.json，当前使用页面内置词库。发布到 GitHub Pages 后请确认 words.json 存在且格式正确。");
+      }
+      titleEl.textContent = `《${state.wordBank.title || "女巫的毒药"}》`;
+      initRound(0, true);
+    }
+
+    function buildRoundCards(roundIndex) {
+      const rounds = getRounds();
+      return rounds[roundIndex].words.map((item, idx) => {
+        const showEnglish = Math.random() < 0.5;
+        return {
+          id: idx,
+          english: item.en,
+          chinese: item.zh,
+          frontText: showEnglish ? item.en : item.zh,
+          backText: showEnglish ? item.zh : item.en,
+          isPoison: false,
+          isRevealed: false,
+          isPoisoned: false
+        };
+      });
+    }
+
+    function initRound(roundIndex, resetScores = true) {
+      state.roundIndex = roundIndex;
+      state.started = false;
+      state.currentPlayer = 1;
+      state.selectedCardId = null;
+      state.poisonSetupIds = [];
+      state.cards = buildRoundCards(roundIndex);
+      if (resetScores) {
+        state.scores = { 1: 0, 2: 0 };
+      }
+      setStatus(state.loadedFromJson
+        ? "词库已从 words.json 载入。请先在 9 张问号卡里选出 2 张毒药牌。"
+        : "当前使用内置词库。请先在 9 张问号卡里选出 2 张毒药牌。");
+      render();
+    }
+
+    function starString(count) {
+      return count > 0 ? "⭐".repeat(count) : "暂无";
+    }
+
+    function updateScoreDisplay() {
+      player1ScoreEl.textContent = starString(state.scores[1]);
+      player2ScoreEl.textContent = starString(state.scores[2]);
+      player1ScoreEl.classList.toggle("empty", state.scores[1] === 0);
+      player2ScoreEl.classList.toggle("empty", state.scores[2] === 0);
+      player1CardEl.classList.toggle("active", state.currentPlayer === 1);
+      player2CardEl.classList.toggle("active", state.currentPlayer === 2);
+    }
+
+    function setStatus(text) {
+      statusTextEl.textContent = text;
+    }
+
+    function loadEnglishVoice() {
+      if (!("speechSynthesis" in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+      selectedVoice = voices.find((voice) => /en/i.test(voice.lang) && /female|samantha|ava|serena|victoria|zira/i.test(voice.name))
+        || voices.find((voice) => /en/i.test(voice.lang))
+        || null;
+      speechReady = true;
+    }
+
+    function speakEnglish(text) {
+      if (!("speechSynthesis" in window) || !text) return;
+      if (!speechReady) {
+        loadEnglishVoice();
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.88;
+      utterance.pitch = 1.02;
+      utterance.volume = 1;
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function getCardById(id) {
+      return state.cards.find((card) => card.id === id);
+    }
+
+    function render() {
+      const rounds = getRounds();
+      roundTextEl.textContent = `${getRoundLabel(state.roundIndex)} / 共 ${rounds.length} 轮`;
+      currentPlayerTextEl.textContent = `Player ${state.currentPlayer}`;
+      updateScoreDisplay();
+
+      boardEl.innerHTML = "";
+      state.cards.forEach((card) => {
+        const cardEl = document.createElement("button");
+        cardEl.className = "card";
+        cardEl.type = "button";
+        cardEl.dataset.id = String(card.id);
+
+        const isProcessed = card.isRevealed || card.isPoisoned;
+        if (state.started && isProcessed) {
+          cardEl.classList.add("disabled");
+        }
+        if (state.selectedCardId === card.id) {
+          cardEl.classList.add("selected");
+        }
+        if (card.isRevealed) {
+          cardEl.classList.add("revealed");
+        }
+        if (card.isPoisoned) {
+          cardEl.classList.add("poisoned");
+        }
+        if (state.teacherMode && card.isPoison) {
+          cardEl.classList.add("teacher-mark");
+        }
+
+        const frontContent = !state.started
+          ? `<div class="card-backmark">?</div>${state.poisonSetupIds.includes(card.id) ? `<div class="setup-mark">${state.poisonSetupIds.indexOf(card.id) + 1}</div>` : ""}`
+          : card.isPoisoned
+            ? '<div class="poison-mark">已中毒</div>'
+            : `<div class="card-text ${card.frontText.length > 22 ? "small" : ""}">${card.frontText}</div>`;
+
+        const backContent = card.isPoisoned
+          ? "<div class=\"poison-mark\">WITCH'S POISON</div>"
+          : `<div class="card-text ${card.backText.length > 22 ? "small" : ""}">${card.backText}</div>`;
+
+        cardEl.innerHTML = `
+          <div class="card-inner">
+            <div class="card-face card-face-front">${frontContent}</div>
+            <div class="card-face card-face-back">${backContent}</div>
+          </div>
+        `;
+
+        cardEl.addEventListener("click", () => handleSelectCard(card.id));
+        boardEl.appendChild(cardEl);
+      });
+
+      nextRoundBtn.disabled = !state.started || state.roundIndex >= rounds.length - 1;
+    }
+
+    function handleSelectCard(cardId) {
+      if (!state.started) {
+        togglePoisonSetup(cardId);
+        return;
+      }
+
+      const card = getCardById(cardId);
+      if (!card || card.isRevealed || card.isPoisoned) {
+        return;
+      }
+
+      state.selectedCardId = cardId;
+      playSound("select");
+      setStatus(`已选中当前题目，请口头提问：“${card.frontText}” 对应的另一种语言是什么？`);
+      render();
+    }
+
+    function togglePoisonSetup(cardId) {
+      const index = state.poisonSetupIds.indexOf(cardId);
+      if (index >= 0) {
+        state.poisonSetupIds.splice(index, 1);
+        playSound("select");
+        setStatus(`已取消一张毒药牌，目前还需选择 ${2 - state.poisonSetupIds.length} 张。`);
+        render();
+        return;
+      }
+
+      if (state.poisonSetupIds.length >= 2) {
+        setStatus("毒药牌已经选满 2 张。如需调整，请先点已选毒药牌取消。");
+        return;
+      }
+
+      state.poisonSetupIds.push(cardId);
+      playSound("select");
+      setStatus(state.poisonSetupIds.length < 2 ? "已选中 1 张毒药牌，请再选择 1 张。" : "2 张毒药牌已选好，可以点击“开始游戏”进入答题。");
+      render();
+    }
+
+    function startGame() {
+      if (state.started) {
+        setStatus("本轮已经开始，可继续选卡片进行提问。");
+        return;
+      }
+      if (state.poisonSetupIds.length !== 2) {
+        setStatus("请先选满 2 张毒药牌，再开始游戏。");
+        return;
+      }
+      state.cards.forEach((card) => {
+        card.isPoison = state.poisonSetupIds.includes(card.id);
+      });
+      state.started = true;
+      state.selectedCardId = null;
+      setStatus("游戏已开始。请先点击一张卡片作为当前题目。");
+      playSound("start");
+      render();
+    }
+
+    function toggleTurn() {
+      state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+      setStatus(`当前回合已切换为 Player ${state.currentPlayer}。`);
+      render();
+    }
+
+    function resolveSelectedCard(byPlayer) {
+      if (!state.started) {
+        setStatus("请先开始游戏。");
+        return;
+      }
+      if (state.selectedCardId === null) {
+        setStatus("请先选中一张待答题卡片，再进行翻牌。");
+        return;
+      }
+
+      const card = getCardById(state.selectedCardId);
+      if (!card || card.isRevealed || card.isPoisoned) {
+        setStatus("这张卡片已经处理过了，请重新选择下一张。");
+        state.selectedCardId = null;
+        render();
+        return;
+      }
+
+      if (card.isPoison) {
+        card.isPoisoned = true;
+        if (byPlayer === 1 || byPlayer === 2) {
+          state.scores[byPlayer] = 0;
+        }
+        playSound("poison");
+        flashPoison(byPlayer);
+        setStatus(byPlayer
+          ? `Player ${byPlayer} 翻到毒药牌，当前星星已清零。游戏继续，请选择下一张卡片。`
+          : "老师揭晓了毒药牌，本题不计分。游戏继续，请选择下一张卡片。");
+      } else {
+        card.isRevealed = true;
+        if (byPlayer === 1 || byPlayer === 2) {
+          state.scores[byPlayer] += 1;
+          playSound("safe");
+          speakEnglish(card.english);
+          setStatus(`Player ${byPlayer} 答对并成功翻牌，获得 1 颗星星。请选择下一张卡片。`);
+        } else {
+          playSound("teacher");
+          speakEnglish(card.english);
+          setStatus("老师已揭晓答案，本题不计分。请选择下一张卡片。");
+        }
+      }
+
+      state.selectedCardId = null;
+      render();
+
+      if (state.cards.every((item) => item.isRevealed || item.isPoisoned)) {
+        const rounds = getRounds();
+        setStatus(state.roundIndex < rounds.length - 1
+          ? "本轮全部处理完成。可点击“下一轮”进入下一轮，分数将默认重置。"
+          : "最后一轮已结束。可点击“重新开始”回到第 1 轮。");
+      }
+    }
+
+    function flashPoison(byPlayer) {
+      overlayEl.classList.add("show");
+      overlayEl.setAttribute("aria-hidden", "false");
+      const sub = overlayEl.querySelector(".overlay-sub");
+      sub.textContent = byPlayer
+        ? `Player ${byPlayer} 中毒了！星星已清零！`
+        : "老师揭晓了毒药牌！本题不计分！";
+
+      clearTimeout(state.overlayTimer);
+      state.overlayTimer = setTimeout(() => {
+        overlayEl.classList.remove("show");
+        overlayEl.setAttribute("aria-hidden", "true");
+      }, 1800);
+    }
+
+    function nextRound() {
+      const rounds = getRounds();
+      if (state.roundIndex >= rounds.length - 1) {
+        setStatus("已经是最后一轮了，可点击“重新开始”回到第 1 轮。");
+        return;
+      }
+      initRound(state.roundIndex + 1, true);
+    }
+
+    function restartGame() {
+      initRound(0, true);
+    }
+
+    function toggleTeacherMode() {
+      state.teacherMode = !state.teacherMode;
+      teacherTagEl.classList.toggle("show", state.teacherMode);
+      setStatus(state.teacherMode
+        ? "教师模式已开启：毒药牌位置会显示微弱标记。"
+        : "教师模式已关闭。");
+      render();
+    }
+
+    function playTone(audioCtx, type, frequency, start, duration, volume) {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gainNode.gain.setValueAtTime(0.0001, start);
+      gainNode.gain.exponentialRampToValueAtTime(volume, start + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.03);
+    }
+
+    function playNoiseBurst(audioCtx, start, duration, volume) {
+      const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      const source = audioCtx.createBufferSource();
+      const filter = audioCtx.createBiquadFilter();
+      const gainNode = audioCtx.createGain();
+      source.buffer = buffer;
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(420, start);
+      gainNode.gain.setValueAtTime(volume, start);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      source.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      source.start(start);
+      source.stop(start + duration);
+    }
+
+    function playSound(kind) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const audioCtx = new AudioContextClass();
+      const start = audioCtx.currentTime + 0.01;
+
+      if (kind === "select") {
+        playTone(audioCtx, "triangle", 480, start, 0.12, 0.04);
+        playTone(audioCtx, "sine", 620, start + 0.06, 0.18, 0.03);
+      } else if (kind === "safe") {
+        playTone(audioCtx, "triangle", 540, start, 0.12, 0.05);
+        playTone(audioCtx, "triangle", 680, start + 0.08, 0.16, 0.05);
+        playTone(audioCtx, "sine", 860, start + 0.16, 0.26, 0.04);
+      } else if (kind === "poison") {
+        playNoiseBurst(audioCtx, start, 0.42, 0.35);
+        playTone(audioCtx, "sawtooth", 180, start, 0.38, 0.09);
+        playTone(audioCtx, "square", 92, start + 0.12, 0.48, 0.06);
+      } else if (kind === "teacher") {
+        playTone(audioCtx, "sine", 360, start, 0.12, 0.03);
+        playTone(audioCtx, "sine", 520, start + 0.1, 0.16, 0.028);
+      } else if (kind === "start") {
+        playTone(audioCtx, "triangle", 390, start, 0.12, 0.03);
+        playTone(audioCtx, "triangle", 522, start + 0.1, 0.16, 0.04);
+        playTone(audioCtx, "triangle", 782, start + 0.2, 0.22, 0.045);
+      }
+
+      setTimeout(() => {
+        audioCtx.close().catch(() => {});
+      }, 900);
+    }
+
+    startBtn.addEventListener("click", startGame);
+    toggleTurnBtn.addEventListener("click", toggleTurn);
+    player1AnswerBtn.addEventListener("click", () => resolveSelectedCard(1));
+    player2AnswerBtn.addEventListener("click", () => resolveSelectedCard(2));
+    teacherRevealBtn.addEventListener("click", () => resolveSelectedCard(0));
+    nextRoundBtn.addEventListener("click", nextRound);
+    restartBtn.addEventListener("click", restartGame);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key.toLowerCase() === "t") {
+        toggleTeacherMode();
+      }
+    });
+
+    if ("speechSynthesis" in window) {
+      loadEnglishVoice();
+      window.speechSynthesis.onvoiceschanged = loadEnglishVoice;
+    }
+
+    overlayEl.addEventListener("click", () => {
+      overlayEl.classList.remove("show");
+      overlayEl.setAttribute("aria-hidden", "true");
+    });
+
+    loadWordBank();
+  </script>
+</body>
+</html>

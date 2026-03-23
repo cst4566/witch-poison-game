@@ -1,0 +1,33 @@
+{
+  "title": "女巫的毒药",
+  "rounds": [
+    {
+      "name": "第1轮",
+      "words": [
+        { "en": "Letter of Enquiry", "zh": "询价函" },
+        { "en": "Quotation", "zh": "报价单" },
+        { "en": "Proposal", "zh": "服务方案" },
+        { "en": "Sales Order", "zh": "销售订单" },
+        { "en": "Engagement Letter", "zh": "业务约定书" },
+        { "en": "Delivery Note", "zh": "运货单" },
+        { "en": "Goods Received Note", "zh": "收货单" },
+        { "en": "Staff Schedules", "zh": "员工日程" },
+        { "en": "Expense Claims", "zh": "费用报销" }
+      ]
+    },
+    {
+      "name": "第2轮",
+      "words": [
+        { "en": "Petty Cash Vouchers", "zh": "零用资金报销单" },
+        { "en": "Invoices", "zh": "发票" },
+        { "en": "Credit Notes", "zh": "抵扣发票" },
+        { "en": "Information Request", "zh": "资料收集请求" },
+        { "en": "Cheque", "zh": "支票" },
+        { "en": "Bank Giro Credits", "zh": "银行信贷转账" },
+        { "en": "Bank Draft", "zh": "银行汇票" },
+        { "en": "Standing Order", "zh": "自动转账" },
+        { "en": "Direct Debit", "zh": "自动付款转账" }
+      ]
+    }
+  ]
+}
