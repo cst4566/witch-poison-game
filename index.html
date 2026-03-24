@@ -358,27 +358,6 @@
       text-shadow: 0 0 18px rgba(255, 74, 102, 0.62);
     }
 
-    .setup-mark {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 3;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 30px;
-      height: 30px;
-      padding: 0 8px;
-      border-radius: 999px;
-      background: rgba(88, 19, 130, 0.92);
-      border: 1px solid rgba(230, 192, 255, 0.58);
-      color: #fff2ff;
-      font-size: 14px;
-      font-weight: 800;
-      box-shadow: 0 0 16px rgba(188, 92, 255, 0.38);
-      pointer-events: none;
-    }
-
     .controls {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -885,12 +864,12 @@
         if (card.isPoisoned) {
           cardEl.classList.add("poisoned");
         }
-        if (state.teacherMode && card.isPoison) {
+        if (state.teacherMode && (state.started ? card.isPoison : state.poisonSetupIds.includes(card.id))) {
           cardEl.classList.add("teacher-mark");
         }
 
         const frontContent = !state.started
-          ? `<div class="card-backmark">?</div>${state.poisonSetupIds.includes(card.id) ? `<div class="setup-mark">${state.poisonSetupIds.indexOf(card.id) + 1}</div>` : ""}`
+          ? '<div class="card-backmark">?</div>'
           : card.isPoisoned
             ? '<div class="poison-mark">已中毒</div>'
             : `<div class="card-text ${card.frontText.length > 22 ? "small" : ""}">${card.frontText}</div>`;
@@ -935,7 +914,7 @@
       if (index >= 0) {
         state.poisonSetupIds.splice(index, 1);
         playSound("select");
-        setStatus(`已取消一张毒药牌，目前还需选择 ${2 - state.poisonSetupIds.length} 张。`);
+        setStatus(`已取消一张已记录的毒药牌，目前还需秘密选择 ${2 - state.poisonSetupIds.length} 张。`);
         render();
         return;
       }
@@ -947,7 +926,7 @@
 
       state.poisonSetupIds.push(cardId);
       playSound("select");
-      setStatus(state.poisonSetupIds.length < 2 ? "已选中 1 张毒药牌，请再选择 1 张。" : "2 张毒药牌已选好，可以点击“开始游戏”进入答题。");
+      setStatus(state.poisonSetupIds.length < 2 ? "已秘密记录 1 张毒药牌，请再秘密选择 1 张。" : "2 张毒药牌已秘密记录，可以点击“开始游戏”进入答题。");
       render();
     }
 
