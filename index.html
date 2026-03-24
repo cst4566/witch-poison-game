@@ -53,14 +53,19 @@
         radial-gradient(circle at 10% 30%, rgba(255,255,255,0.04) 0 2px, transparent 3px),
         radial-gradient(circle at 80% 22%, rgba(255,255,255,0.03) 0 2px, transparent 3px),
         radial-gradient(circle at 35% 68%, rgba(255,255,255,0.04) 0 1px, transparent 2px),
-        radial-gradient(circle at 66% 80%, rgba(255,255,255,0.03) 0 2px, transparent 3px);
+        radial-gradient(circle at 66% 80%, rgba(255,255,255,0.03) 0 2px, transparent 3px),
+        radial-gradient(circle at 18% 74%, rgba(214, 43, 88, 0.08) 0 6px, transparent 7px),
+        radial-gradient(circle at 84% 62%, rgba(188, 92, 255, 0.08) 0 5px, transparent 6px);
       opacity: 0.8;
     }
 
     body::after {
       background:
+        radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(188, 92, 255, 0.045) 58.5%, transparent 60%),
+        radial-gradient(circle at 50% 50%, transparent 0 66%, rgba(214, 43, 88, 0.035) 66.5%, transparent 68%),
         conic-gradient(from 120deg at 50% 50%, transparent 0deg, rgba(188, 92, 255, 0.03) 40deg, transparent 80deg, rgba(214, 43, 88, 0.05) 120deg, transparent 180deg, rgba(124, 231, 209, 0.03) 220deg, transparent 360deg);
       mix-blend-mode: screen;
+      opacity: 0.92;
     }
 
     .app {
@@ -104,6 +109,36 @@
       right: -70px;
       background: radial-gradient(circle, rgba(188, 92, 255, 0.28), transparent 68%);
       filter: blur(8px);
+    }
+
+    .hero::after {
+      content: "☽ ✦ ᛟ ✦ ☾";
+      position: absolute;
+      right: 26px;
+      bottom: 10px;
+      font-size: 18px;
+      letter-spacing: 10px;
+      color: rgba(238, 214, 255, 0.22);
+      text-shadow: 0 0 12px rgba(188, 92, 255, 0.28);
+    }
+
+    .witch-fly {
+      position: absolute;
+      right: 26px;
+      top: 8px;
+      width: 270px;
+      height: 178px;
+      opacity: 0.76;
+      filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.32)) drop-shadow(0 0 18px rgba(188, 92, 255, 0.16));
+      animation: driftWitch 6.4s ease-in-out infinite;
+      transform-origin: 68% 52%;
+      pointer-events: none;
+    }
+
+    .witch-fly svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
     }
 
     .title {
@@ -206,9 +241,148 @@
         rgba(12, 7, 18, 0.72);
       border: 1px solid rgba(255,255,255,0.07);
       box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .board-shell::before,
+    .board-shell::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .board-shell::before {
+      inset: 10px;
+      border: 1px solid rgba(216, 166, 255, 0.08);
+      border-radius: 22px;
+      box-shadow: inset 0 0 30px rgba(188, 92, 255, 0.06);
+    }
+
+    .board-shell::after {
+      width: 300px;
+      height: 300px;
+      right: -90px;
+      bottom: -120px;
+      background: radial-gradient(circle, rgba(214, 43, 88, 0.16), transparent 70%);
+      filter: blur(12px);
+    }
+
+    .cauldron {
+      position: absolute;
+      left: 22px;
+      bottom: 26px;
+      width: 114px;
+      height: 88px;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cauldron .pot {
+      position: absolute;
+      left: 14px;
+      bottom: 8px;
+      width: 82px;
+      height: 52px;
+      border-radius: 0 0 42px 42px;
+      background: linear-gradient(180deg, rgba(48, 34, 58, 0.95), rgba(12, 10, 18, 1));
+      box-shadow: inset 0 8px 14px rgba(255,255,255,0.04), 0 0 18px rgba(188, 92, 255, 0.08);
+    }
+
+    .cauldron .pot::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: -8px;
+      width: 90px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(79, 53, 93, 0.96), rgba(19, 11, 28, 0.98));
+    }
+
+    .cauldron .brew {
+      position: absolute;
+      left: 18px;
+      top: 24px;
+      width: 74px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(120, 255, 211, 0.95), rgba(58, 210, 168, 0.72) 55%, rgba(39, 112, 94, 0.1) 100%);
+      box-shadow: 0 0 22px rgba(124, 231, 209, 0.35);
+    }
+
+    .cauldron .bubble,
+    .cauldron .bubble::after,
+    .cauldron .bubble::before {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(146, 255, 220, 0.72);
+      box-shadow: 0 0 14px rgba(124, 231, 209, 0.3);
+      content: "";
+    }
+
+    .cauldron .bubble {
+      left: 42px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      animation: bubbleRise 2.6s ease-in-out infinite;
+    }
+
+    .cauldron .bubble::before {
+      left: -18px;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      animation: bubbleRise 3.2s ease-in-out infinite;
+    }
+
+    .cauldron .bubble::after {
+      left: 18px;
+      top: 10px;
+      width: 7px;
+      height: 7px;
+      animation: bubbleRise 2.9s ease-in-out infinite;
+    }
+
+    .broom-corner {
+      position: absolute;
+      right: 18px;
+      top: 16px;
+      width: 88px;
+      height: 26px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.58;
+      transform: rotate(14deg);
+    }
+
+    .broom-corner::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 66px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(126, 78, 35, 0.12), rgba(204, 157, 109, 0.8));
+    }
+
+    .broom-corner::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 4px;
+      width: 24px;
+      height: 16px;
+      background: linear-gradient(90deg, rgba(228, 192, 130, 0.25), rgba(228, 192, 130, 0.9));
+      clip-path: polygon(0 50%, 28% 0, 100% 12%, 100% 88%, 28% 100%);
     }
 
     .board {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
@@ -308,6 +482,16 @@
     .card-face-front::before {
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: inset 0 0 40px rgba(188, 92, 255, 0.06);
+    }
+
+    .card-face-front::after {
+      content: "✦";
+      position: absolute;
+      left: 16px;
+      bottom: 10px;
+      font-size: 18px;
+      color: rgba(236, 205, 255, 0.18);
+      text-shadow: 0 0 10px rgba(188, 92, 255, 0.24);
     }
 
     .card-face-back {
@@ -440,10 +624,34 @@
       padding: 24px;
     }
 
+    .overlay::before,
+    .overlay::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .overlay::before {
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.16) 0 4%, rgba(255, 106, 146, 0.16) 7%, rgba(85, 0, 23, 0.2) 18%, transparent 42%),
+        repeating-radial-gradient(circle at center, rgba(153, 16, 57, 0.12) 0 12px, transparent 12px 26px);
+      mix-blend-mode: screen;
+      animation: venomPulse 1.15s ease-out forwards;
+    }
+
+    .overlay::after {
+      background:
+        radial-gradient(circle at 30% 35%, rgba(126, 255, 196, 0.07), transparent 22%),
+        radial-gradient(circle at 68% 66%, rgba(126, 255, 196, 0.06), transparent 20%);
+      filter: blur(16px);
+      opacity: 0.9;
+    }
+
     .overlay.show {
       opacity: 1;
       pointer-events: auto;
-      animation: flashRed 0.85s ease, quake 0.65s linear 2;
+      animation: flashRed 0.95s ease, quake 0.65s linear 2;
     }
 
     .overlay-title {
@@ -465,9 +673,9 @@
       aspect-ratio: 1;
       border-radius: 50%;
       background:
-        radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 10%, rgba(255, 211, 109, 0.95) 12%, rgba(255, 74, 102, 0.95) 28%, rgba(98, 0, 27, 0.25) 60%, transparent 72%);
-      box-shadow: 0 0 50px rgba(255, 74, 102, 0.5), 0 0 120px rgba(255, 74, 102, 0.35);
-      animation: burst 1.2s ease forwards;
+        radial-gradient(circle, rgba(255, 255, 255, 0.98) 0 8%, rgba(255, 211, 109, 0.95) 11%, rgba(255, 74, 102, 0.96) 24%, rgba(85, 255, 198, 0.26) 36%, rgba(56, 0, 18, 0.22) 62%, transparent 74%);
+      box-shadow: 0 0 60px rgba(255, 74, 102, 0.58), 0 0 150px rgba(255, 74, 102, 0.34), 0 0 90px rgba(85, 255, 198, 0.16);
+      animation: burst 1.28s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
     }
 
     .teacher-tag {
@@ -518,6 +726,23 @@
       20% { transform: scale(0.88); opacity: 1; }
       55% { transform: scale(1.12); opacity: 1; }
       100% { transform: scale(1.45); opacity: 0; }
+    }
+
+    @keyframes venomPulse {
+      0% { transform: scale(0.72); opacity: 0; }
+      25% { transform: scale(1.02); opacity: 1; }
+      65% { transform: scale(1.12); opacity: 0.65; }
+      100% { transform: scale(1.24); opacity: 0; }
+    }
+
+    @keyframes driftWitch {
+      0%, 100% { transform: translateY(0) translateX(0) rotate(-1deg); }
+      50% { transform: translateY(-6px) translateX(5px) rotate(1.5deg); }
+    }
+
+    @keyframes bubbleRise {
+      0%, 100% { transform: translateY(0) scale(0.92); opacity: 0.7; }
+      50% { transform: translateY(-10px) scale(1.12); opacity: 1; }
     }
 
     @media (max-width: 1200px) {
@@ -582,6 +807,12 @@
         flex-direction: column;
         align-items: stretch;
       }
+
+      .witch-fly,
+      .cauldron,
+      .broom-corner {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -597,6 +828,59 @@
   <div class="app">
     <section class="top-panel">
       <div class="panel hero">
+        <div class="witch-fly" aria-hidden="true">
+          <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="witchDressA" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6b7691" stop-opacity="0.96" />
+                <stop offset="55%" stop-color="#2d3350" stop-opacity="0.96" />
+                <stop offset="100%" stop-color="#0f1221" stop-opacity="0.98" />
+              </linearGradient>
+              <linearGradient id="witchHairA" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#313149" stop-opacity="0.95" />
+                <stop offset="100%" stop-color="#171626" stop-opacity="0.98" />
+              </linearGradient>
+              <linearGradient id="broomWoodA" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#6b411d" stop-opacity="0.2" />
+                <stop offset="45%" stop-color="#a56b37" stop-opacity="0.9" />
+                <stop offset="100%" stop-color="#e6bb7b" stop-opacity="0.95" />
+              </linearGradient>
+              <radialGradient id="witchGlowA" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#d29cff" stop-opacity="0.28" />
+                <stop offset="100%" stop-color="#d29cff" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <ellipse cx="178" cy="90" rx="100" ry="56" fill="url(#witchGlowA)" />
+            <g transform="translate(6 10) rotate(5 140 88)">
+              <path d="M15 121 C88 100, 172 113, 274 142" stroke="url(#broomWoodA)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M264 129 C284 136, 297 145, 292 154 C281 153, 270 149, 255 142" fill="#b48a55" opacity="0.95"/>
+              <path d="M258 133 C277 142, 286 151, 281 160 C268 157, 257 151, 246 145" fill="#8b643c" opacity="0.95"/>
+              <path d="M39 92 C58 89, 68 97, 66 112 C54 116, 42 109, 39 92" fill="#ead3cb" opacity="0.95"/>
+              <path d="M50 84 C69 75, 93 77, 112 95 C98 100, 83 107, 67 115 C55 109, 48 98, 50 84" fill="#67708b" opacity="0.96"/>
+              <path d="M90 86 C128 74, 170 83, 220 122 C201 147, 168 157, 130 154 C101 150, 79 133, 74 112 C73 99, 79 91, 90 86" fill="url(#witchDressA)"/>
+              <path d="M137 92 C169 85, 203 102, 248 130 C235 149, 210 162, 182 167 C160 170, 138 165, 124 154 C120 140, 124 109, 137 92" fill="#1f243c" opacity="0.7"/>
+              <path d="M83 70 C108 47, 138 43, 182 55 C196 59, 209 64, 224 74 C209 79, 188 82, 169 84 C141 88, 112 88, 83 70" fill="url(#witchHairA)"/>
+              <path d="M92 58 C130 29, 179 31, 240 62 C230 71, 218 76, 204 77 C177 79, 145 74, 120 71 C107 70, 97 66, 92 58" fill="#28283f" opacity="0.9"/>
+              <circle cx="74" cy="73" r="12" fill="#f1d8cf" opacity="0.98"/>
+              <path d="M64 75 C57 77, 52 84, 51 88 C58 89, 66 84, 69 79" fill="#b47d69" opacity="0.9"/>
+              <path d="M60 68 C66 62, 76 57, 89 56 C98 57, 107 60, 118 65 C104 70, 89 72, 74 72 C68 72, 63 71, 60 68" fill="#242235" opacity="0.98"/>
+              <path d="M61 48 C73 20, 94 10, 118 17 C114 32, 111 40, 108 49 C94 51, 78 51, 61 48" fill="#313349" opacity="0.98"/>
+              <ellipse cx="79" cy="48" rx="39" ry="8" fill="#252132" opacity="0.98"/>
+              <path d="M54 83 C64 79, 72 84, 77 92 C65 100, 56 108, 49 117 C42 112, 40 102, 42 94 C45 88, 49 85, 54 83" fill="#bfc8dc" opacity="0.88"/>
+              <path d="M116 149 C124 145, 133 148, 141 156 C136 167, 126 173, 115 175 C109 167, 110 156, 116 149" fill="#1a1d31"/>
+              <path d="M132 155 C136 153, 141 154, 145 159 C143 166, 137 170, 130 171 C127 166, 128 159, 132 155" fill="#d7b26c" opacity="0.75"/>
+              <path d="M163 146 C171 143, 179 145, 186 152 C181 163, 171 170, 160 171 C154 163, 156 153, 163 146" fill="#181b2f"/>
+              <path d="M177 151 C181 149, 185 150, 189 154 C187 161, 181 165, 175 166 C172 161, 173 155, 177 151" fill="#d7b26c" opacity="0.75"/>
+              <path d="M124 136 C116 142, 111 152, 110 166" stroke="#d5f0c6" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+              <path d="M145 136 C137 142, 133 151, 132 165" stroke="#d5f0c6" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+              <path d="M124 141 C120 145, 118 151, 117 158" stroke="#78956f" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
+              <path d="M144 141 C140 145, 138 151, 137 158" stroke="#78956f" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
+              <circle cx="258" cy="56" r="3.2" fill="#ffd772" opacity="0.9"/>
+              <circle cx="270" cy="48" r="2.5" fill="#d7a5ff" opacity="0.86"/>
+              <circle cx="279" cy="61" r="2.8" fill="#ffd772" opacity="0.8"/>
+            </g>
+          </svg>
+        </div>
         <h1 class="title">《女巫的毒药》</h1>
         <p class="subtitle">双人课堂词汇对决：选卡、抢答、翻牌，躲开女巫留下的毒药。安全牌翻开后会显示另一种语言，毒药牌会立刻清空当前翻牌玩家的星星。</p>
       </div>
@@ -630,6 +914,12 @@
     </section>
 
     <section class="board-shell panel">
+      <div class="cauldron" aria-hidden="true">
+        <div class="bubble"></div>
+        <div class="brew"></div>
+        <div class="pot"></div>
+      </div>
+      <div class="broom-corner" aria-hidden="true"></div>
       <div class="board" id="board"></div>
       <div class="legend">
         <div class="hint-pill">操作流程：先选 2 张毒药牌 → 开始游戏 → 选中卡片 → 口头提问 → 点击教师控制按钮</div>
@@ -975,6 +1265,9 @@
 
       if (card.isPoison) {
         card.isPoisoned = true;
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
         if (byPlayer === 1 || byPlayer === 2) {
           state.scores[byPlayer] = 0;
         }
@@ -1096,9 +1389,11 @@
         playTone(audioCtx, "triangle", 680, start + 0.08, 0.16, 0.05);
         playTone(audioCtx, "sine", 860, start + 0.16, 0.26, 0.04);
       } else if (kind === "poison") {
-        playNoiseBurst(audioCtx, start, 0.42, 0.35);
-        playTone(audioCtx, "sawtooth", 180, start, 0.38, 0.09);
-        playTone(audioCtx, "square", 92, start + 0.12, 0.48, 0.06);
+        playNoiseBurst(audioCtx, start, 0.52, 0.52);
+        playTone(audioCtx, "sawtooth", 110, start, 0.44, 0.16);
+        playTone(audioCtx, "triangle", 62, start + 0.06, 0.68, 0.12);
+        playTone(audioCtx, "square", 46, start + 0.14, 0.84, 0.08);
+        playTone(audioCtx, "sine", 310, start + 0.36, 0.42, 0.028);
       } else if (kind === "teacher") {
         playTone(audioCtx, "sine", 360, start, 0.12, 0.03);
         playTone(audioCtx, "sine", 520, start + 0.1, 0.16, 0.028);
